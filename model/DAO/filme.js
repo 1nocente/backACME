@@ -17,7 +17,6 @@ const insertFilme = async function (){
     
 }
 
-
 //Função para atualizar um filme no Banco de Dados
 const updateFilme = async function (){
 
@@ -45,22 +44,41 @@ const selectAllFilmes = async function (){
 }
 
 const selectByNomeFilmes = async function (nomeFilme) {
+
+    try{
     let sql = `select * from tbl_filme where nome like "${nomeFilme}%"`
+
     let rsFilmes = await prisma.$queryRawUnsafe(sql)
 
-
-    if(rsFilmes.length > 0)
         return rsFilmes
-    else
+
+    } catch (error) {
+
         return false
+
+    }
 }
 
 //Função para buscar um filme do banco de dados pelo ID
-const selectByIdFilmes = async function (){
+const selectByIdFilmes = async function (id){
 
-
+    try{
+    // script sql para buscar um filme pelo id
+    let sql = `select * from tbl_filme where id = ${id}`
     
+    //Encaminha o script SQL para o BD
+    let rsFilme = await prisma.$queryRawUnsafe(sql)
+
+    return rsFilme
+        
+    } catch (error) {
+
+        return false
+        
+    }
 }
+
+
 
 module.exports = {
 

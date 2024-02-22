@@ -93,24 +93,20 @@ app.get('/v2/acmeFilmes/filmes', cors(), async function(request, response){
 
 } 
 )
+
 app.get('/v2/AcmeFilmes/filmes/filtro', cors(), async function(request, response) {
 
+     //recebe o nome da requisição
     let nomeFilme = request.query.nome
+
+    //encaminha o nome para a cotroller buscar o filme
     let filmeNome = await controllerFilmes.getNomeFilme(nomeFilme)
 
-    if(filmeNome){
+    response.status(filmeNome.status_code)
         response.json(filmeNome)
-        response.status(200)
-    }else{
-        response.json({erro:'Nome não encontrado'})
-        response.status(404)
-    }
+        
 
-
-})
-
-
-
+    })
 
 app.get('/v1/AcmeFilmes/filme/:id', cors(), async function( request, response, next) {
 
@@ -128,6 +124,19 @@ app.get('/v1/AcmeFilmes/filme/:id', cors(), async function( request, response, n
     next()
 })
 
+app.get('/v2/AcmeFilmes/filme/:id', cors(), async function( request, response) {
+
+    //recebe o id da requisição
+    let idFilme = request.params.id
+
+    //encaminha o id para a cotroller buscar o filme
+    let dadosFilme = await controllerFilmes.getBuscarFilme(idFilme)
+
+    response.status(dadosFilme.status_code)
+    response.json(dadosFilme)
+
+})
+
 app.listen('8080', () =>{
-    console.log('funfando')
+    console.log('RODANDO NA PORTA 8080')
 })

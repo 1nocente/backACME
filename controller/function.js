@@ -110,5 +110,6 @@ console.log(getFilmesId(1))
 
 module.exports = {
     getFilmes,
-    getFilmesId
+    getFilmesId,
+    getNomeFilmes
 }
