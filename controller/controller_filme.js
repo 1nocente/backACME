@@ -99,7 +99,7 @@ const getNomeFilme = async function (nomeFilme) {
 
 
    if(nome == '' || nome == undefined){
-    return message.ERROR_INVALID_ID //400
+    return message.ERROR_INVALID_NAME //400
    }else{
 
     let nomeDoFilme = await FilmesDAO.selectByNomeFilmes(nome)
