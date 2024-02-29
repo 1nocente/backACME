@@ -39,10 +39,10 @@ const filmes_funcoes = require('./controller/function.js')
 const app = express()
 
 app.use(express.json())
-app.use((request,response,next) =>{
+app.use((request, response , next) =>{
 
     response.header('Access-Control-Allow-origin', '*')
-    response.header('Acesss-Control-Allow-Methods', 'GET')
+    response.header('Acesss-Control-Allow-Methods', 'GET, POST, DELETE, OPTIONS')
     app.use(cors())
 
     next()
@@ -53,7 +53,13 @@ app.use((request,response,next) =>{
 
 /***************************Import dos arquivos de Controller do projeto***************************************************/
     const controllerFilmes = require('./controller/controller_filme.js')
+
+
+    
  /*************************************************************************************************************************/
+
+//Criando um objeto para controlar a chegada dos dados na requisição em formato JSOn
+ const bodyParserJSON = bodyParser.json()
 
 //endpoint: versao 1.0 - retorna os dados de filme do Banco de dados
 
@@ -136,6 +142,17 @@ app.get('/v2/AcmeFilmes/filme/:id', cors(), async function( request, response) {
     response.json(dadosFilme)
 
 })
+
+app.post('/v2/AcmeFilmes/filme', cors(), bodyParserJSON, async function(request, response){
+    //Recebe todos os dados encaminhados na requisição pelo body
+    let dadosBody = request.body
+
+    //Encaminha os dados para o controller enviar para o DAO
+    let resultDadosNovoFilme = await controllerFilmes.setInserirNovoFilme(dadosBody)
+    response.status(resultDadosNovoFilme.status_code)
+    response.json(resultDadosNovoFilme)
+})
+
 
 app.listen('8080', () =>{
     console.log('RODANDO NA PORTA 8080')
