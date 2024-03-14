@@ -12,6 +12,8 @@ const ERROR_INVALID_NAME       =         {status: false, status_code: 400, messa
 const ERROR_REQUIRED_FIELDS    =         {status: false, status_code: 400, message: ' Existem campos requeridos que nao foram preenchidos, ou não atendem aos critérios de digitação  '}
 const ERROR_NOT_FOUND          =         {status: false, status_code: 404, message: 'Não foi encontrado nenhum item'}
 const ERROR_INTERNAL_SERVER_DB =         {status: false, status_code: 500, message: 'Não foi possivel processar a requisição, devido a um erro no acesso ao Banco De Dados, contate o adm da API !!'}
+const ERROR_CONTENT_TYPE       =         {status: false, status_code: 415, message: 'O content-type encaminhado na requisição não é suportado pelo servidor. deve-se encaminhar apenas requisições com applicatio/json !!'}
+const ERROR_INTERNAL_SERVER    =         {status: false, status_code: 500, message: 'Não foi possivel processar a requisição, devido a um erro na camada de negócio/controle da aplicação, contate o adm da API !!'}
 
 /* ************************************MENSAGENS DE SUCESSO****************************************************/ 
 
@@ -23,5 +25,7 @@ module.exports = {
     ERROR_INTERNAL_SERVER_DB,
     ERROR_INVALID_NAME,
     ERROR_REQUIRED_FIELDS,
-    SUCCESS_CREATED_ITEM
+    SUCCESS_CREATED_ITEM,
+    ERROR_CONTENT_TYPE,
+    ERROR_INTERNAL_SERVER
 }

@@ -107,12 +107,55 @@ const getId = async function (dadosFilme) {
 }
 
 //Função para atualizar um filme no Banco de Dados
-const updateFilme = async function () {
-
-}
+const updateFilme = async function (id, dadosFilme) {
+    
+        try {
+            // Script SQL para atualizar um filme pelo ID
+            let sql = `
+                UPDATE tbl_filme 
+                SET 
+                    nome = '${dadosFilme.nome}',
+                    sinopse = '${dadosFilme.sinopse}',
+                    duracao = '${dadosFilme.duracao}',
+                    data_lancamento = '${dadosFilme.data_lancamento}',
+                    data_relancamento = '${dadosFilme.data_relancamento}',
+                    foto_capa = '${dadosFilme.foto_capa}',
+                    valor_unitario = '${dadosFilme.valor_unitario}'
+                WHERE id = ${id};
+            `;
+    
+            // Executa o script SQL
+            let result = await prisma.$executeRawUnsafe(sql);
+    
+            if (result) {
+                return true;
+            } else {
+                return false;
+            }
+        } catch (error) {
+            return false;
+        }
+    }
 
 //Função para excluir um filme no Banco de Dados
-const deleteFilme = async function () {
+const deleteFilme = async function (id) {
+
+    try {
+        // Script SQL para excluir um filme pelo ID
+        let sql = `DELETE FROM tbl_filme WHERE id = ${id};`
+
+        // Executa o script SQL no BD
+        let result = await prisma.$executeRawUnsafe(sql)
+        console.log(result);
+
+        if (result) {
+            return true; // Retorna verdadeiro se a exclusão for bem-sucedida
+        } else {
+            return false; // Retorna falso se a exclusão falhar
+        }
+    } catch (error) {
+        return false; // Retorna falso se ocorrer algum erro durante a exclusão
+    }
 
 }
 
@@ -155,6 +198,7 @@ const selectByNomeFilmes = async function (nomeFilme) {
     }
 }
 
+
 //Função para buscar um filme do banco de dados pelo ID
 const selectByIdFilmes = async function (id) {
 
@@ -175,6 +219,7 @@ const selectByIdFilmes = async function (id) {
 }
 
 module.exports = {
+    deleteFilme,
     getId,
     selectByNomeFilmes,
     insertFilme,

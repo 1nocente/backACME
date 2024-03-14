@@ -106,7 +106,6 @@ const getFilmesId = function (idFilme) {
 
     return JSONfilme
 }
-console.log(getFilmesId(1))
 
 module.exports = {
     getFilmes,
