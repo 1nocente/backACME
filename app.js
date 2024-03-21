@@ -143,7 +143,7 @@ app.get('/v2/AcmeFilmes/filme/:id', cors(), async function (request, response) {
 
 })
 
-app.post('/v2/AcmeFilmes/Cfilme', cors(), bodyParserJSON, async function (request, response) {
+app.post('/v2/AcmeFilmes/filme', cors(), bodyParserJSON, async function (request, response) {
 
 
     //recebe o content-type da requisição
@@ -175,7 +175,7 @@ app.delete('/v2/acmefilmes/filme/:id', cors(), async function (request, response
     response.status(resultadoExclusao.status_code).json(resultadoExclusao);
 });
 
-app.put('/v2/acmefilmes/Pfilme/:id', cors(), bodyParserJSON, async function (request, response) {
+app.put('/v2/acmefilmes/filme/:id', cors(), bodyParserJSON, async function (request, response) {
     // Recebe o ID do filme da requisição
     let idFilme = request.params.id;
 
