@@ -34,7 +34,7 @@
 const express = require('express')
 const bodyParser = require('body-parser')
 const cors = require('cors')
-const filmes_funcoes = require('../controller/function.js')
+const filmes_funcoes = require('./controller/function.js')
 const port = process.env.PORT || 8080
 
 const app = express()
@@ -53,7 +53,7 @@ app.use((request, response, next) => {
 //Endpoints:
 
 /***************************Import dos arquivos de Controller do projeto***************************************************/
-const controllerFilmes = require('../controller/controller_filme.js')
+const controllerFilmes = require('./controller/controller_filme.js')
 
 
 
