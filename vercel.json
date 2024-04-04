@@ -1,13 +1,13 @@
 {
     "functions": {
-        "./api/app.js": {
+        "api/app.js": {
             "memory": 1024
         } 
     },
     "rewrites":[
         {
             "source": "/(.*)",
-            "destination": "./api/app.js"
+            "destination": "api/app.js"
         }
     ]
     
