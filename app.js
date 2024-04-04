@@ -35,6 +35,7 @@ const express = require('express')
 const bodyParser = require('body-parser')
 const cors = require('cors')
 const filmes_funcoes = require('./controller/function.js')
+const port = process.env.PORT || 8080
 
 const app = express()
 
@@ -42,7 +43,7 @@ app.use(express.json())
 app.use((request, response, next) => {
 
     response.header('Access-Control-Allow-origin', '*')
-    response.header('Acesss-Control-Allow-Methods', 'GET, POST, DELETE, OPTIONS')
+    response.header('Access-Control-Allow-Methods', 'GET, POST, DELETE, OPTIONS')
     app.use(cors())
 
     next()
@@ -190,6 +191,6 @@ app.put('/v2/acmefilmes/filme/:id', cors(), bodyParserJSON, async function (requ
 });
 
 
-app.listen('8080', () => {
-    console.log('RODANDO NA PORTA 8080')
+app.listen(port, () => {
+    console.log('RODANDO NA PORTA ' + port)
 })
