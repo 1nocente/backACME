@@ -6,10 +6,9 @@
             "use": "@vercel/node"
         }
     ],
-    "routes": [
-        {
-            "src": "/(.*)",
-            "dest": "/"
+    "functions": {
+        "api":  {
+            "handler": "app.js"
         }
-    ]
+    }
 }
