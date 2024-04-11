@@ -215,6 +215,11 @@ const getNomeFilme = async function (nomeFilme) {
             return message.ERROR_INTERNAL_SERVER_DB
         }
     }
+    
+
+    
+    
+    
 
     //    //Chama a função do DAO que retorna filmes do BD
     //    let dadosFilmes = await FilmesDAO.selectByNomeFilmes(nomeFilme)
@@ -239,5 +244,5 @@ module.exports = {
     setExcluirFilme,
     setInserirNovoFilme,
     getBuscarFilme,
-    getListarFilmes
+    getListarFilmes,
 }

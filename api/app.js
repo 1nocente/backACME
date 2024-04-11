@@ -54,6 +54,7 @@ app.use((request, response, next) => {
 
 /***************************Import dos arquivos de Controller do projeto***************************************************/
 const controllerFilmes = require('../controller/controller_filme.js')
+const controllerGeneros = require('../controller/controller_genero.js')
 
 
 
@@ -189,6 +190,26 @@ app.put('/v2/acmefilmes/filme/:id', cors(), bodyParserJSON, async function (requ
     // Retorna a resposta ao cliente
     response.status(resultadoAtualizacao.status_code).json(resultadoAtualizacao);
 });
+
+app.get('/v2/acmeFilmes/generos', cors(), async function (request, response) {
+
+
+    //Chama a afunção da controller para retornar os todos os filmes
+    let dadosGeneros = await controllerGeneros.getListarGeneros()
+
+
+    //Validação para verifica se existem dados a serem retornados
+    if (dadosGeneros) {
+        response.json(dadosGeneros)
+        response.status(200)
+    } else {
+        response.json({ message: 'Nenhum registro encontrado' })
+        response.status(404)
+    }
+
+})
+
+
 
 
 app.listen(port, () => {
