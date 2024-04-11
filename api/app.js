@@ -209,6 +209,45 @@ app.get('/v2/acmeFilmes/generos', cors(), async function (request, response) {
 
 })
 
+app.post('/v2/AcmeFilmes/genero', cors(), bodyParserJSON, async function (request, response){
+
+    let contentType = request.headers['content-type']
+
+
+    let dadosBody = request.body
+
+    let resultDadosNovoGenero = await controllerGeneros.setInserirNovoGenero(dadosBody, contentType)
+    
+    response.status(resultDadosNovoGenero.status_code)
+    response.json(resultDadosNovoGenero)
+})
+
+// Endpoint para excluir um filme
+app.delete('/v2/acmefilmes/genero/:id', cors(), async function (request, response) {
+    // Recebe o ID do filme a ser excluído da requisição
+    let idGenero = request.params.id;
+
+    // Encaminha o ID para a função do controlador que exclui o filme
+    let resultadoExclusao = await controllerGeneros.setExcluirGenero(idGenero);
+
+    // Define a resposta com base no resultado da exclusão
+    response.status(resultadoExclusao.status_code).json(resultadoExclusao);
+});
+
+app.put('/v2/acmefilmes/genero/:id', cors(), bodyParserJSON, async function (request, response) {
+    // Recebe o ID do filme da requisição
+    let idGenero = request.params.id;
+
+    // Recebe os dados do corpo da requisição
+    let dadosGenero = request.body;
+
+    // Chama a função do controller para atualizar o filme
+    let resultadoAtualizacao = await controllerGeneros.setAtualizarGenero(idGenero, dadosGenero);
+
+    // Retorna a resposta ao cliente
+    response.status(resultadoAtualizacao.status_code).json(resultadoAtualizacao);
+});
+
 
 
 
