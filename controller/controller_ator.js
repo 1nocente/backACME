@@ -3,28 +3,38 @@ const message = require('../module/config.js')
 
 //import do arquivo responsavel pela interação com o BD (model)
 const atoresDAO = require('../model/DAO/ator.js')
+const nacionalidadeDAO = require('../model/DAO/nacionalidade.js')
 
 const getListarAtores = async function () {
+    try {
+        // Chama a função do DAO que retorna atores do BD
+        let dadosAtores = await atoresDAO.selectAllAtores()
 
-    //Cria um objeto JSON
-    let atoresJSON = {}
+        // Validar se há dados de atores
+        if (!dadosAtores) {
+            return { message: "Nenhum ator encontrado" }
+        }
 
-    //Chama a função do DAO que retorna filmes do BD
-    let dadosAtores = await atoresDAO.selectAllAtores()
+        // Mapear os dados dos atores
+        let atoresComNacionalidades = await Promise.all(dadosAtores.map(async (ator) => {
+            // Buscar as nacionalidades do ator
+            let nacionalidades = await nacionalidadeDAO.getNacionalidadeByNomeAtor(ator.nome)
 
-    //Validação para verificar se o DAO retornou dados
-    if (dadosAtores) {
-        //cria o JSON para retorna para o app
-       atoresJSON.filmes = dadosAtores
-       atoresJSON.quantidade = dadosAtores.length
-       atoresJSON.status_code = 200
+            // Retornar o ator com as nacionalidades
+            return {
+                ...ator,
+                nacionalidades: nacionalidades.map(nacionalidade => nacionalidade.nome)
+            }
+        }))
 
-        return atoresJSON
-    }
-    else {
-        return false
+        return atoresComNacionalidades
+    } catch (error) {
+        console.error("Erro ao buscar atores e nacionalidades:", error)
+        return { message: "Erro ao buscar atores e nacionalidades" }
     }
 }
+
+
 
 module.exports = {
     getListarAtores
