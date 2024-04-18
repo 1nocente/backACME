@@ -33,7 +33,8 @@ const insertFilme = async function (dadosFilme) {
                         data_lancamento,
                         data_relancamento,
                         foto_capa,
-                        valor_unitario
+                        valor_unitario,
+                        id_classificacao
 ) values (
   '${dadosFilme.nome}',
   '${dadosFilme.sinopse}',
@@ -41,17 +42,20 @@ const insertFilme = async function (dadosFilme) {
   '${dadosFilme.data_lancamento}',
   '${dadosFilme.data_relancamento}',
   '${dadosFilme.foto_capa}',
-  '${dadosFilme.valor_unitario}'
+  '${dadosFilme.valor_unitario}',
+  '${dadosFilme.id_classificacao}'
   );`
 
 }else{
+
              sql = `insert into tbl_filme (nome,
                    sinopse,
                    duracao,
                    data_lancamento,
                    data_relancamento,
                    foto_capa,
-                   valor_unitario
+                   valor_unitario,
+                   id_classificacao
 ) values (
 '${dadosFilme.nome}',
 '${dadosFilme.sinopse}',
@@ -59,7 +63,8 @@ const insertFilme = async function (dadosFilme) {
 '${dadosFilme.data_lancamento}',
 null,
 '${dadosFilme.foto_capa}',
-'${dadosFilme.valor_unitario}'
+'${dadosFilme.valor_unitario}',
+'${dadosFilme.id_classificacao}'
 );`
 }
 
@@ -68,6 +73,7 @@ null,
         //$queryRawUnsafe() - serve para executar scripts sem retorno de dados (select)
 
 
+       // console.log(sql) TA DANDO ERRO FILHO DA PUTA????????? USA ISSO AQUI
 
         let result = await prisma.$executeRawUnsafe(sql)
 
@@ -111,6 +117,12 @@ const updateFilme = async function (id, dadosFilme) {
     
         try {
             // Script SQL para atualizar um filme pelo ID
+
+            if(dadosFilme.data_relancamento != '' && 
+            dadosFilme.data_relancamento != null && 
+                dadosFilme.data_relancamento != undefined
+                ){
+
             let sql = `
                 UPDATE tbl_filme 
                 SET 
@@ -120,9 +132,22 @@ const updateFilme = async function (id, dadosFilme) {
                     data_lancamento = '${dadosFilme.data_lancamento}',
                     data_relancamento = '${dadosFilme.data_relancamento}',
                     foto_capa = '${dadosFilme.foto_capa}',
-                    valor_unitario = '${dadosFilme.valor_unitario}'
+                    valor_unitario = '${dadosFilme.valor_unitario}',
+                    id_classificacao = '${dadosFilme.id_classificacao}'
                 WHERE id = ${id};
             `;
+        }else{
+                sql = `
+   '${dadosFilme.nome}',
+   '${dadosFilme.sinopse}',
+   '${dadosFilme.duracao}',
+   '${dadosFilme.data_lancamento}',
+   null,
+   '${dadosFilme.foto_capa}',
+   '${dadosFilme.valor_unitario}',
+   ${dadosFilme.id_classificacao}
+   );`
+   }
     
             // Executa o script SQL
             let result = await prisma.$executeRawUnsafe(sql);
@@ -135,6 +160,7 @@ const updateFilme = async function (id, dadosFilme) {
         } catch (error) {
             return false;
         }
+        
     }
 
 //Função para excluir um filme no Banco de Dados
@@ -166,36 +192,9 @@ const deleteFilme = async function (id) {
 
 //Função para listar todos os filmes do Banco de Dados
 const selectAllFilmes = async function () {
-    let sql = `SELECT 
-    f.nome AS nome_do_filme,
-    f.sinopse,
-    f.duracao,
-    f.data_lancamento,
-    f.data_relancamento,
-    f.foto_capa,
-    f.valor_unitario,
-    c.faixa_etaria AS classificacao,
-    GROUP_CONCAT(DISTINCT a.nome) AS atores,
-    GROUP_CONCAT(DISTINCT g.nome) AS generos,
-    d.nome AS diretor
-FROM 
-    tbl_filme f
-JOIN 
-    tbl_filme_genero fg ON f.id = fg.id_filme
-JOIN 
-    tbl_genero g ON fg.id_genero = g.id
-JOIN 
-    tbl_classificacao c ON f.id_classificacao = c.id
-LEFT JOIN 
-    tbl_filme_ator fa ON f.id = fa.id_filme
-LEFT JOIN 
-    tbl_ator a ON fa.id_ator = a.id
-JOIN 
-    tbl_filme_diretor fd ON f.id = fd.id_filme
-JOIN 
-    tbl_diretor d ON fd.id_diretor = d.id
-GROUP BY 
-    f.nome;`
+    let sql = `SELECT f.*, c.faixa_etaria
+    FROM tbl_filme f
+    JOIN tbl_classificacao c ON f.id_classificacao = c.id;`
 
     let rsFilmes = await prisma.$queryRawUnsafe(sql)
 
