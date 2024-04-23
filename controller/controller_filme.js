@@ -29,6 +29,7 @@ const setInserirNovoFilme = async function (dadosFilme, contentType) {
                  dadosFilme.foto_capa == '' || dadosFilme.foto_capa == undefined || dadosFilme.foto_capa == null || dadosFilme.foto_capa.length > 200 ||
               dadosFilme.valor_unitario > 999 || dadosFilme.id_classificacao == null
             ) {
+                
                 return message.ERROR_REQUIRED_FIELDS;
             } else {
                 let validateStatus = false;
@@ -41,7 +42,7 @@ const setInserirNovoFilme = async function (dadosFilme, contentType) {
 
                        
                     if (dadosFilme.data_relancamento.length != 10) {
-
+                        
                     
                         return message.ERROR_REQUIRED_FIELDS; // 400
                     } else {
@@ -91,9 +92,9 @@ const setAtualizarFilme = async function (id, dadosFilme, contentType) {
 
 
     try {
-
+    
         //Validação de content-type (apenas application/json)
-        if (String(contentType).toLowerCase() == 'application/json') {
+        if (String(contentType).toLowerCase() == 'application/json'){
 
             //Cria o objeto JSON 
             let filmeJSON = {}
@@ -128,7 +129,6 @@ const setAtualizarFilme = async function (id, dadosFilme, contentType) {
 
                 if (validateStatus) {
                     let filme = await FilmesDAO.updateFilme(id,dadosFilme)
-
                     
 
 
@@ -149,6 +149,10 @@ const setAtualizarFilme = async function (id, dadosFilme, contentType) {
 
 
         } else {
+            console.log(("ENTROU NO ELSE"))
+
+            console.log(dadosFilme)
+
             return message.ERROR_CONTENT_TYPE //415 
 
         }

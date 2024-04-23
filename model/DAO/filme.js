@@ -115,15 +115,18 @@ const getId = async function (dadosFilme) {
 //Função para atualizar um filme no Banco de Dados
 const updateFilme = async function (id, dadosFilme) {
     
+    
+    console.log(dadosFilme)
         try {
             // Script SQL para atualizar um filme pelo ID
 
+            let sql
             if(dadosFilme.data_relancamento != '' && 
             dadosFilme.data_relancamento != null && 
                 dadosFilme.data_relancamento != undefined
                 ){
 
-            let sql = `
+            sql = `
                 UPDATE tbl_filme 
                 SET 
                     nome = '${dadosFilme.nome}',
@@ -136,19 +139,26 @@ const updateFilme = async function (id, dadosFilme) {
                     id_classificacao = '${dadosFilme.id_classificacao}'
                 WHERE id = ${id};
             `;
+
         }else{
-                sql = `
-   '${dadosFilme.nome}',
-   '${dadosFilme.sinopse}',
-   '${dadosFilme.duracao}',
-   '${dadosFilme.data_lancamento}',
-   null,
-   '${dadosFilme.foto_capa}',
-   '${dadosFilme.valor_unitario}',
-   ${dadosFilme.id_classificacao}
-   );`
+            sql = `
+                UPDATE tbl_filme 
+                SET 
+                    nome = '${dadosFilme.nome}',
+                    sinopse = '${dadosFilme.sinopse}',
+                    duracao = '${dadosFilme.duracao}',
+                    data_lancamento = '${dadosFilme.data_lancamento}',
+                    data_relancamento = null,
+                    foto_capa = '${dadosFilme.foto_capa}',
+                    valor_unitario = '${dadosFilme.valor_unitario}',
+                    id_classificacao = '${dadosFilme.id_classificacao}'
+                WHERE id = ${id};
+            `;
+
+   
    }
     
+   console.log(sql)
             // Executa o script SQL
             let result = await prisma.$executeRawUnsafe(sql);
     

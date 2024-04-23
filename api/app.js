@@ -183,7 +183,6 @@ app.delete('/v2/acmefilmes/filme/:id', cors(), async function (request, response
 app.put('/v2/acmefilmes/filme/:id', cors(), bodyParserJSON, async function (request, response) {
 
     let contentType = request.header('content-type')
-
     // Recebe o ID do filme da requisição
     let idFilme = request.params.id;
 
@@ -191,10 +190,9 @@ app.put('/v2/acmefilmes/filme/:id', cors(), bodyParserJSON, async function (requ
     let dadosFilme = request.body;
 
     // Chama a função do controller para atualizar o filme
-    let resultadoAtualizacao = await controllerFilmes.setAtualizarFilme(idFilme, contentType, dadosFilme);
+
 
     // Retorna a resposta ao cliente
-    response.status(resultadoAtualizacao.status_code).json(resultadoAtualizacao);
 
     let DadosFilme = await controllerFilmes.setAtualizarFilme(idFilme, dadosFilme, contentType)
     response.status(DadosFilme.status_code)
