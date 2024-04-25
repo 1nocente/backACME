@@ -59,8 +59,64 @@ const getSexoByIdAtor = async function (id) {
     }
 }
 
+
+
+
+
+
+
+
+
+
+
+// Função para buscar o sexo de um ator pelo nome
+const getSexoByNomeDiretor = async function (nome) {
+    try {
+        // Script SQL para buscar o sexo do ator pelo nome
+        let sql = `SELECT tbl_diretor.nome, tbl_sexo.nome
+                   FROM tbl_diretor
+                    INNER JOIN tbl_sexo ON tbl_diretor.id_sexo = tbl_sexo.id
+                      WHERE tbl_diretor.nome like "${nome}%";`
+
+                      
+
+        // Encaminha o script SQL para o BD
+        let resultado = await prisma.$queryRawUnsafe(sql)
+
+        console.log(resultado);
+        return resultado
+
+    } catch (error) {
+        console.error("Erro ao buscar o sexo do diretor pelo nome:", error)
+        return null
+    }
+}
+
+// Função para buscar o sexo de um ator pelo ID
+const getSexoByIdDiretor = async function (id) {
+    try {
+        // Script SQL para buscar o sexo do ator pelo ID
+        let sql = `SELECT s.nome 
+                   FROM tbl_diretor a 
+                   INNER JOIN tbl_sexo s ON a.id_sexo = s.id
+                   WHERE a.id = ${id}`
+
+        // Encaminha o script SQL para o BD
+        let resultado = await prisma.$queryRawUnsafe(sql)
+
+        return resultado
+
+    } catch (error) {
+        console.error("Erro ao buscar o sexo do ator pelo ID:", error)
+        return null
+    }
+}
+
+
 module.exports = {
     selectAllSexos,
     getSexoByIdAtor,
-    getSexoByNomeAtor
+    getSexoByNomeAtor,
+    getSexoByIdDiretor,
+    getSexoByNomeDiretor
 }

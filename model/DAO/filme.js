@@ -90,7 +90,7 @@ null,
 
 }
 
-const getId = async function (dadosFilme) {
+const getId = async function () {
  
     let sql 
 
@@ -303,6 +303,51 @@ const selectByIdFilmes = async function (id) {
         return false
     }
 }
+const insertAtorFilme = async function (idFilme, idAtor) {
+    let sql;
+
+    try {
+        sql = `INSERT INTO tbl_filme_ator (id_filme, id_ator) VALUES (${idFilme}, ${idAtor});`;
+        
+        console.log(sql); // Verifique se a consulta SQL está sendo gerada corretamente
+
+        let result = await prisma.$executeRawUnsafe(sql);
+
+        if (result) {
+            console.log(result); // Verifique o resultado retornado após a execução da consulta
+            return true;
+        } else {
+            return false;
+        }
+    } catch (error) {
+        console.error(error); // Registre qualquer erro que ocorra durante a execução da consulta
+        return false;
+    }
+}
+
+
+const insertDiretorFilme = async function (idFilme, idDiretor) {
+    let sql;
+
+    try {
+        sql = `INSERT INTO tbl_filme_diretor (id_filme, id_diretor) VALUES (${idFilme}, ${idDiretor});`;
+        
+        console.log(sql); // Verifique se a consulta SQL está sendo gerada corretamente
+
+        let result = await prisma.$executeRawUnsafe(sql);
+
+        if (result) {
+            console.log(result); // Verifique o resultado retornado após a execução da consulta
+            return true;
+        } else {
+            return false;
+        }
+    } catch (error) {
+        console.error(error); // Registre qualquer erro que ocorra durante a execução da consulta
+        return false;
+    }
+}
+
 
 
 
@@ -315,5 +360,7 @@ module.exports = {
     deleteFilme,
     selectAllFilmes,
     selectByIdFilmes,
+    insertDiretorFilme,
+    insertAtorFilme
 }
 

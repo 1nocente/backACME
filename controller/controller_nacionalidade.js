@@ -69,6 +69,8 @@ const getNacionalidadeIdAtor = async function (id) {
 }
 
 
+
+
 module.exports = {
     getListarNacionalidade,
     getNacionalidadeNomeAtor,

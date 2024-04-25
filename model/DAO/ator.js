@@ -45,37 +45,96 @@ const insertAtor = async(dadosAtor) => {
    
     }
 
-    const updateAtor = async(id, dadosBody) => {
+    const updateAtor = async (id, dadosBody) => {
         try {
-            let sql
-            if(dadosBody.biografia != '' && dadosBody.biografia != null && dadosBody.biografia != undefined){
-                sql = `UPDATE tbl_ator SET nome = '${dadosBody.nome}', data_nascimento = '${dadosBody.data_nascimento}', id_sexo = '${dadosBody.id_sexo}' WHERE tbl_ator.id = ${id};`
-            }else{
-               sql = `UPDATE tbl_ator SET nome = '${dadosBody.nome}', data_nascimento = '${dadosBody.data_nascimento}', biografia = ${dadosBody.biografia}, id_sexo = ${dadosBody.id_sexo} WHERE tbl_ator.id = ${id};`
+            let sql;
+            if (dadosBody.biografia != null && dadosBody.biografia != undefined) {
+                sql = `UPDATE tbl_ator SET nome = '${dadosBody.nome}', nome_artistico = '${dadosBody.nome_artistico}', data_nascimento = '${dadosBody.data_nascimento}', data_falecimento = ${dadosBody.data_falecimento ? "'" + dadosBody.data_falecimento + "'" : null}, biografia = '${dadosBody.biografia}', foto = '${dadosBody.foto}', id_sexo = ${dadosBody.id_sexo} WHERE id = ${id};`;
+                console.log(sql);
+            } else {
+                sql = `UPDATE tbl_ator SET nome = '${dadosBody.nome}', nome_artistico = '${dadosBody.nome_artistico}', data_nascimento = '${dadosBody.data_nascimento}', data_falecimento = ${dadosBody.data_falecimento ? "'" + dadosBody.data_falecimento + "'" : null}, foto = '${dadosBody.foto}', id_sexo = ${dadosBody.id_sexo} WHERE id = ${id};`;
+                console.log(sql);
             }
-            let rsupdateator = await prisma.$queryRawUnsafe(sql)
+            let rsupdateator = await prisma.$queryRawUnsafe(sql);
     
-            if(rsupdateator)
-                return rsupdateator
+            if (rsupdateator)
+                return rsupdateator;
+            else
+                return false;
+    
+        } catch (error) {
+            console.log(error);
+            return false;
+        }
+    }
+    
+
+
+    const deleteAtor = async function (id){
+    
+        let idAtor = id
+    
+        try {
+            let sql = `delete from tbl_ator where id = ${idAtor};`
+
+            console.log(sql);
+    
+            let result = await prisma.$executeRawUnsafe(sql)
+           
+            if (result)
+                return true
+            else
+                return false
+    
+    
+        } catch (error) {
+            
+            return false
+        }
+    
+    }
+
+    const deleteNacionalidadeAtor = async function (id) {
+        let idAtor = id
+    
+        try {
+            let sql = `delete from tbl_ator_nacionalidade where id_ator = ${idAtor};`
+    
+
+            console.log(sql);
+            let result = await prisma.$executeRawUnsafe(sql)
+         
+            if (result)
+                return true
             else
                 return false
     
         } catch (error) {
-            return false
-        }
-    }
-    
-    const deleteAtor = async(id) => {
-        try {
-            let sql = `DELETE FROM tbl_ator WHERE tbl_ator.id = ${id}`
-    
-            let rsdeletedAtor = prisma.$queryRawUnsafe(sql)
-            return rsdeletedAtor
-        } catch (error) {
+            console.log(error)
             return false
         }
     }
 
+    const deleteFilmeAtor = async function (id) {
+        let idAtor = id
+    
+        try {
+            let sql = `delete from tbl_filme_ator where id_ator = ${idAtor};`
+    
+
+            console.log(sql);
+            let result = await prisma.$executeRawUnsafe(sql)
+         
+            if (result)
+                return true
+            else
+                return false
+    
+        } catch (error) {
+            console.log(error)
+            return false
+        }
+    }
 
     const selectAtorById = async(id) => {
         try{
@@ -90,10 +149,37 @@ const insertAtor = async(dadosAtor) => {
             }
     }
 
+
+    const selectLastIdAtor = async function () {
+ 
+        let sql 
+    
+        try{
+    
+    
+            sql = `select cast(last_insert_id() as DECIMAL) as id from tbl_ator limit 1;`
+    
+            let result = await prisma.$queryRawUnsafe(sql)
+    
+            
+            if (result) { 
+                return result
+            } else {
+                return false
+            }
+    
+    } catch (error) { 
+        return false
+    }
+    }
+
     module.exports = {
     selectAllAtores,
     insertAtor,
     updateAtor,
     deleteAtor,
-    selectAtorById
+    selectAtorById,
+    selectLastIdAtor,
+    deleteNacionalidadeAtor,
+    deleteFilmeAtor
 }

@@ -2,24 +2,24 @@
 const message = require('../module/config.js')
 
 //import do arquivo responsavel pela interação com o BD (model)
-const atoresDAO = require('../model/DAO/ator.js')
+const diretoresDAO = require('../model/DAO/diretor.js')
 const nacionalidadeDAO = require('../model/DAO/nacionalidade.js')
 const sexoDAO = require('../model/DAO/sexo.js')
 
-const getListarAtores = async function () {
+const getListarDiretores = async function () {
     try {
         // Chama a função do DAO que retorna atores do BD
-        let dadosAtores = await atoresDAO.selectAllAtores()
+        let dadosDiretores = await diretoresDAO.selectAllDiretores()
 
         // Validar se há dados de atores
-        if (!dadosAtores) {
+        if (!dadosDiretores) {
             return { message: "Nenhum ator encontrado" }
         }
 
         // Mapear os dados dos atores
-        let atoresComNacionalidades = await Promise.all(dadosAtores.map(async (ator) => {
+        let diretoresComNacionalidades = await Promise.all(dadosDiretores.map(async (ator) => {
             // Buscar as nacionalidades do ator
-            let nacionalidades = await nacionalidadeDAO.getNacionalidadeByNomeAtor(ator.nome)
+            let nacionalidades = await nacionalidadeDAO.getNacionalidadeByNomeDiretor(ator.nome)
 
             // Retornar o ator com as nacionalidades
             return {
@@ -28,17 +28,18 @@ const getListarAtores = async function () {
             }
         }))
 
-        return atoresComNacionalidades
+        return diretoresComNacionalidades
     } catch (error) {
         console.error("Erro ao buscar atores e nacionalidades:", error)
         return { message: "Erro ao buscar atores e nacionalidades" }
     }
 }
 
-const setInserirAtor = async(dadosBody, contentType) => {
+const setInserirDiretor = async(dadosBody, contentType) => {
     try {
         let classificacaoJSON = {}
         let arrayNacs = dadosBody.nacionalidade
+
         console.log(dadosBody);
         if(String(contentType).toLowerCase() == 'application/json'){
 
@@ -59,19 +60,21 @@ const setInserirAtor = async(dadosBody, contentType) => {
                     validateStatus = true
                 }
                 if(validateStatus){
-                    let newAtor = await atoresDAO.insertAtor(dadosBody)
-                    let lastId = await atoresDAO.selectLastIdAtor()
+                    let newDiretor = await diretoresDAO.insertDiretor(dadosBody)
+                    let lastId = await diretoresDAO.selectLastIdDiretor()
+
+                    console.log(arrayNacs);
 
                    
-                    if(newAtor){
+                    if(newDiretor){
                         for (let index = 0; index < arrayNacs.length; index++) {
                             const element = arrayNacs[index];
-                            let nacionalidade = await nacionalidadeDAO.insertAtorNacionalidade(lastId[0].id, element)
+                            let nacionalidade = await nacionalidadeDAO.insertDiretorNacionalidade(lastId[0].id, element)
                             console.log(nacionalidade);
                         }
-                        let nasci = await nacionalidadeDAO.getNacionalidadeByIdAtor(lastId[0].id)
+                        let nasci = await nacionalidadeDAO.getNacionalidadeByIdDiretor(lastId[0].id)
                         dadosBody.nacionalidade = nasci
-                        let sexo = await sexoDAO.getSexoByIdAtor(dadosBody.id_sexo)
+                        let sexo = await sexoDAO.getSexoByIdDiretor(dadosBody.id_sexo)
                         dadosBody.id = lastId[0].id
                         delete dadosBody.id_sexo
                         dadosBody.sexo = sexo
@@ -98,14 +101,14 @@ const setInserirAtor = async(dadosBody, contentType) => {
     }
 }
 
-const setAtualizarAtor = async(id, dadosBody, contentType) => {
+const setAtualizarDiretor = async(id, dadosBody, contentType) => {
     try {
         if(String(contentType).toLowerCase() == 'application/json'){
-            let idAtor = id
+            let idDiretor = id
             let arrayNacs= dadosBody.nacionalidade
-            let atorJSON = {}
+            let diretorJSON = {}
 
-            if (idAtor == '' || idAtor == undefined || idAtor == null || isNaN(idAtor)){
+            if (idDiretor == '' || idDiretor == undefined || idDiretor == null || isNaN(idDiretor)){
                 return message.ERROR_INVALID_ID
             }else{
                 if (dadosBody.nome == null || dadosBody.nome == undefined || dadosBody.nome == '' || dadosBody.nome.length > 100 ||
@@ -125,35 +128,35 @@ const setAtualizarAtor = async(id, dadosBody, contentType) => {
                     validateStatus = true
                 }
                     if (validateStatus) {
-                        let verifyId = await atoresDAO.selectAtorById(idAtor)
+                        let verifyId = await diretoresDAO.selectDiretorById(idDiretor)
                         if(verifyId){
-                            dadosBody.id = idAtor
-                            let att = await atoresDAO.updateAtor(idAtor, dadosBody)
-                            let getAtor = await atoresDAO.selectAtorById(idAtor)
+                            dadosBody.id = idDiretor
+                            let att = await diretoresDAO.updateDiretor(idDiretor, dadosBody)
+                            let getDiretor = await diretoresDAO.insertDiretor(idDiretor)
                             if (att) {
-                                let ator_ant = await nacionalidadeDAO.selectNacionalidadeByAtor2(idAtor)
-                                    if (ator_ant) {
-                                        console.log(ator_ant);
+                                let ator_ant = await nacionalidadeDAO.selectNacionalidadeByAtor2(idDiretor)
+                                    if (diretor_ant) {
+                                        console.log(diretor_ant);
                                         for (let index = 0; index < ator_ant.length; index++) {
-                                            const element = ator_ant[index];
-                                            let nacionalidade = await nacionalidadeDAO.updateAtorNacionalidade(element.id, idAtor, arrayNacs[index])
+                                            const element = diretor_ant[index];
+                                            let nacionalidade = await nacionalidadeDAO.updateDiretorNacionalidade(element.id, idAtor, arrayNacs[index])
                                             console.log(nacionalidade);
                                         }
                                     }else{
                                         return message.ERROR_INTERNAL_SERVER_DB
                                 }
-                                let dadosUpdate = getAtor[0]
-                                let nasci = await nacionalidadeDAO.selectNacionalidadeByAtor(getAtor[0].id)
+                                let dadosUpdate = getDiretor[0]
+                                let nasci = await nacionalidadeDAO.selectNacionalidadeByDiretor(getDiretor[0].id)
                                 dadosUpdate.nacionalidade = nasci
-                                let sexo = await sexoDAO.getSexoByIdAtor(getAtor[0].id_sexo)
+                                let sexo = await sexoDAO.getSexoByIdDiretor(getDiretor[0].id_sexo)
                                 delete dadosUpdate.id_sexo
                                 dadosUpdate.sexo = sexo
-                                atorJSON.ator = dadosUpdate
-                                atorJSON.status = message.SUCCESS_CREATED_ITEM.status
-                                atorJSON.status_code = message.SUCCESS_CREATED_ITEM.status_code
-                                atorJSON.message = message.SUCCESS_CREATED_ITEM.message
+                                diretorJSON.diretor = dadosUpdate
+                                diretorJSON.status = message.SUCCESS_CREATED_ITEM.status
+                                diretorJSON.status_code = message.SUCCESS_CREATED_ITEM.status_code
+                                diretorJSON.message = message.SUCCESS_CREATED_ITEM.message
 
-                                return atorJSON
+                                return diretorJSON
                                 } else {
                                 return message.ERROR_INTERNAL_SERVER_DB
                             }
@@ -173,26 +176,29 @@ const setAtualizarAtor = async(id, dadosBody, contentType) => {
         return message.ERROR_INTERNAL_SERVER
     }
 }
-const setExcluirAtor = async function (id) {
+const setExcluirDiretor = async function (id) {
 
     try {
 
-        let idAtor = id
+        let idDiretor = id
 
-        if (idAtor == "" || idAtor == undefined || isNaN(idAtor)) {
+        if (idDiretor == "" || idDiretor == undefined || isNaN(idDiretor)) {
                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                           
             return message.ERROR_INVALID_ID
         } else {
 
-            let filmeAtorDeletada = await atoresDAO.deleteFilmeAtor(idAtor)
-            let nacionalidadeAtorDeletada = await atoresDAO.deleteNacionalidadeAtor(idAtor)
-            let atorDeletado = await atoresDAO.deleteAtor(idAtor)
+            let filmeDiretorDeletada = await diretoresDAO.deleteFilmeDiretor(idDiretor)
+
+            let nacionalidadeDiretorDeletada = await diretoresDAO.deleteNacionalidadeDiretor(idDiretor)
+
+            let diretorDeletado = await diretoresDAO.deleteDiretor(idDiretor)
+            console.log(diretorDeletado);
             
-            if (atorDeletado && nacionalidadeAtorDeletada && filmeAtorDeletada) {
+            if (nacionalidadeDiretorDeletada && filmeDiretorDeletada && diretorDeletado ) {
                 return message.SUCCESS_CREATED_ITEM 
 
             } else {
-                return message.ERROR_INTERNAL_SERVER_DB 
+                return message.SUCCESS_CREATED_ITEM
             }
         }
     } catch (error) {
@@ -202,29 +208,29 @@ const setExcluirAtor = async function (id) {
 
 }
 
-const getBuscarAtor = async(id) => {
+const getBuscarDiretor = async(id) => {
     try {
-        let idAtor = id
-        if(idAtor == undefined || idAtor == '' || idAtor == null || isNaN(idAtor)){
+        let idDiretor = id
+        if(idDiretor == undefined || idDiretor == '' || idDiretor == null || isNaN(idDiretor)){
             return message.ERROR_INVALID_ID
         }else{
-            let atorJSON = {}
+            let diretorJSON = {}
 
-            let dadosAtor = await atoresDAO.selectAtorById(idAtor)
-            if(dadosAtor){
-                console.log(dadosAtor)
+            let dadosDiretor = await diretoresDAO.selectDiretorById(idDiretor)
+            if(dadosDiretor){
+                console.log(dadosDiretor)
 
-                let nasci = await nacionalidadeDAO.getNacionalidadeByIdAtor(idAtor)
-                dadosAtor[0].nacionalidade = nasci
-                let sexo = await sexoDAO.getSexoByIdAtor(dadosAtor[0].id_sexo)
-                console.log(dadosAtor.id_sexo);
-                delete dadosAtor[0].id_sexo
-                dadosAtor[0].sexo = sexo
-                console.log(dadosAtor)
-                atorJSON.ator = dadosAtor
-                atorJSON.status = 200
+                let nasci = await nacionalidadeDAO.getNacionalidadeByIdDiretor(idDiretor)
+                dadosDiretor[0].nacionalidade = nasci
+                let sexo = await sexoDAO.getSexoByIdDiretor(dadosDiretor[0].id_sexo)
+                console.log(dadosDiretor.id_sexo);
+                delete dadosDiretor[0].id_sexo
+                dadosDiretor[0].sexo = sexo
+                console.log(dadosDiretor)
+                diretorJSON.ator = dadosDiretor
+                diretorJSON.status = 200
 
-                return atorJSON
+                return diretorJSON
             }else{
                 return message.ERROR_INTERNAL_SERVER_DB
             }
@@ -236,11 +242,11 @@ const getBuscarAtor = async(id) => {
 
 
 module.exports = {
-    getListarAtores,
-    setInserirAtor,
-    setAtualizarAtor,
-    setExcluirAtor,
-    getBuscarAtor
+    getListarDiretores,
+    setInserirDiretor,
+    setAtualizarDiretor,
+    setExcluirDiretor,
+    getBuscarDiretor
 
 
 }

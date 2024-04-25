@@ -26,8 +26,8 @@ const setInserirNovoFilme = async function (dadosFilme, contentType) {
                 dadosFilme.sinopse == '' || dadosFilme.sinopse == undefined || dadosFilme.sinopse == null || dadosFilme.sinopse.length > 65000 ||
                 dadosFilme.duracao == '' || dadosFilme.duracao == undefined || dadosFilme.duracao == null || dadosFilme.duracao.length > 8 ||
                 dadosFilme.data_lancamento == '' || dadosFilme.data_lancamento == undefined || dadosFilme.data_lancamento == null || dadosFilme.data_lancamento.length != 10 || 
-                 dadosFilme.foto_capa == '' || dadosFilme.foto_capa == undefined || dadosFilme.foto_capa == null || dadosFilme.foto_capa.length > 200 ||
-              dadosFilme.valor_unitario > 999 || dadosFilme.id_classificacao == null
+                dadosFilme.foto_capa == '' || dadosFilme.foto_capa == undefined || dadosFilme.foto_capa == null || dadosFilme.foto_capa.length > 200 ||
+                dadosFilme.valor_unitario > 999 || dadosFilme.id_classificacao == null
             ) {
                 
                 return message.ERROR_REQUIRED_FIELDS;
@@ -71,6 +71,26 @@ const setInserirNovoFilme = async function (dadosFilme, contentType) {
                         novoFilmeJSON.status = message.SUCCESS_CREATED_ITEM.status;
                         novoFilmeJSON.status_code = message.SUCCESS_CREATED_ITEM.status_code;
                         novoFilmeJSON.message = message.SUCCESS_CREATED_ITEM.message;
+
+                        dadosFilme.elenco.forEach(async idAtor =>{
+                            let novoAtorFilme
+                            if(!isNaN(idAtor))
+                            novoAtorFilme = await FilmesDAO.insertAtorFilme(novoId, idAtor)
+                            else
+                            return message.ERROR_INVALID_NAME
+                            console.log(novoAtorFilme);
+                        })
+    
+                        dadosFilme.diretor.forEach(async idDiretor =>{
+                            let novoDiretorFilme
+                            
+                            if(!isNaN(idDiretor))
+                            novoDiretorFilme = await FilmesDAO.insertDiretorFilme(novoId, idDiretor)
+                            else
+                            return message.ERROR_INVALID_NAME
+                            console.log(novoDiretorFilme);
+                        })
+    
 
                         return novoFilmeJSON; // 201
                     } else {
