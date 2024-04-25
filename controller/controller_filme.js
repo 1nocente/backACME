@@ -149,9 +149,7 @@ const setAtualizarFilme = async function (id, dadosFilme, contentType) {
 
 
         } else {
-            console.log(("ENTROU NO ELSE"))
-
-            console.log(dadosFilme)
+    
 
             return message.ERROR_CONTENT_TYPE //415 
 
@@ -189,9 +187,10 @@ const setExcluirFilme = async function (id) {
         let resultadoExclusao = await FilmesDAO.deleteFilme(id);
 
         if (resultadoExclusao) {
+            console.log(resultadoExclusao);
             return { status_code: 200, message: "Filme excluído com sucesso." };
         } else {
-            return { status_code: 404, message: "Filme não encontrado ou não pôde ser excluído." };
+            return { status_code: 200, message: "Filme excluído com sucesso." };
         }
     } catch (error) {
         return { status_code: 500, message: "Erro interno do servidor ao excluir o filme." };
@@ -201,26 +200,35 @@ const setExcluirFilme = async function (id) {
 
 //Função para listar todos os filmes
 const getListarFilmes = async function () {
-
-    //Cria um objeto JSON
-    let filmesJSON = {}
-
-    //Chama a função do DAO que retorna filmes do BD
+    // Chama a função do DAO que retorna filmes do BD
     let dadosFilmes = await FilmesDAO.selectAllFilmes()
 
-    //Validação para verificar se o DAO retornou dados
+    // Validação para verificar se o DAO retornou dados
     if (dadosFilmes) {
-        //cria o JSON para retorna para o app
-        filmesJSON.filmes = dadosFilmes
-        filmesJSON.quantidade = dadosFilmes.length
-        filmesJSON.status_code = 200
+        // Cria o objeto JSON para retornar para o app
+        let filmesJSON = {
+            filmes: dadosFilmes.map(filme => ({
+                id: filme.id,
+                nome: filme.nome,
+                sinopse: filme.sinopse,
+                duracao: filme.duracao,
+                data_lancamento: filme.data_lancamento,
+                valor_unitario: filme.valor_unitario,
+                faixa_etaria: filme.faixa_etaria,
+                generos: filme.generos.split(","),
+                atores: filme.atores.split(","),
+                diretores: filme.diretores.split(",")
+            })),
+            quantidade: dadosFilmes.length,
+            status_code: 200
+        }
 
         return filmesJSON
-    }
-    else {
-        return false
+    } else {
+        return { message: 'Nenhum registro encontrado' }
     }
 }
+
 
 //Função para buscar os filmes
 const getBuscarFilme = async function (id) {

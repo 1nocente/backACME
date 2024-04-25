@@ -25,9 +25,12 @@ const getSexoByNomeAtor = async function (nome) {
                     INNER JOIN tbl_sexo ON tbl_ator.id_sexo = tbl_sexo.id
                       WHERE tbl_ator.nome like "${nome}%";`
 
+                      
+
         // Encaminha o script SQL para o BD
         let resultado = await prisma.$queryRawUnsafe(sql)
 
+        console.log(resultado);
         return resultado
 
     } catch (error) {

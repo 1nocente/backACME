@@ -57,7 +57,6 @@ const setInserirNovaClassificacao = async function (dadosClassificacao, contentT
             return message.ERROR_CONTENT_TYPE
         }
     } catch (error) {
-        console.log(error)
         return message.ERROR_INTERNAL_SERVER
     }
 }
@@ -86,7 +85,6 @@ const setAtualizarClassificacao = async function (id, dadosClassificacao) {
             return { message: 'Falha ao atualizar a classificação', status_code: 500 }
         }
     } catch (error) {
-        console.log(error)
         return { message: 'Erro interno do servidor', status_code: 500 }
     }
 }

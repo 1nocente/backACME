@@ -30,25 +30,21 @@ const getListarNacionalidade = async function () {
 
 const getNacionalidadeNomeAtor = async function (nome) {
     try {
-        // Validação para verificar se o nome foi fornecido
-        if (!nome || typeof nome !== 'string') {
-            return { status_code: 400, message: "Nome inválido" };
-        } else {
-            // Chamada à função que busca a nacionalidade do ator pelo nome
-            const resultado = await nacionaliadeDAO.getNacionalidadeByNomeAtor(nome);
+        // Chamada à função que busca a nacionalidade do ator pelo nome
+        const resultado = await nacionaliadeDAO.getNacionalidadeByNomeAtor(nome);
 
-            if (resultado) {
-                // Retorna o resultado obtido
-                return { status_code: 200, nacionalidade: resultado[0].nome };
-            } else {
-                return { status_code: 404, message: "Ator não encontrado" };
-            }
+        if (resultado && resultado.length > 0) {
+            // Retorna o resultado obtido
+            return { status_code: 200, nacionalidade: resultado[0].nome };
+        } else {
+            return { status_code: 404, message: "Ator não encontrado" };
         }
     } catch (error) {
         console.error("Erro ao buscar a nacionalidade do ator pelo nome:", error);
         return { status_code: 500, message: "Erro interno do servidor" };
     }
 }
+
 
 const getNacionalidadeIdAtor = async function (id) {
     try {

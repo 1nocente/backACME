@@ -158,7 +158,7 @@ const updateFilme = async function (id, dadosFilme) {
    
    }
     
-   console.log(sql)
+   
             // Executa o script SQL
             let result = await prisma.$executeRawUnsafe(sql);
     
@@ -175,6 +175,9 @@ const updateFilme = async function (id, dadosFilme) {
 
 //Função para excluir um filme no Banco de Dados
 const deleteFilme = async function (id) {
+
+
+   
 
     try {
         // Script SQL para excluir um filme pelo ID
@@ -198,25 +201,44 @@ const deleteFilme = async function (id) {
         return false; // Retorna falso se ocorrer algum erro durante a exclusão
     }
 
+
 }
 
 //Função para listar todos os filmes do Banco de Dados
 const selectAllFilmes = async function () {
-    let sql = `SELECT f.*, c.faixa_etaria
-    FROM tbl_filme f
-    JOIN tbl_classificacao c ON f.id_classificacao = c.id;`
+    let sql = `SELECT 
+                    f.*, 
+                    c.faixa_etaria,
+                    GROUP_CONCAT(DISTINCT g.nome) AS generos,
+                    GROUP_CONCAT(DISTINCT a.nome) AS atores,
+                    GROUP_CONCAT(DISTINCT d.nome) AS diretores
+                FROM 
+                    tbl_filme f
+                JOIN 
+                    tbl_classificacao c ON f.id_classificacao = c.id
+                JOIN 
+                    tbl_filme_genero fg ON f.id = fg.id_filme
+                JOIN 
+                    tbl_genero g ON fg.id_genero = g.id
+                JOIN 
+                    tbl_filme_ator fa ON f.id = fa.id_filme
+                JOIN 
+                    tbl_ator a ON fa.id_ator = a.id
+                JOIN 
+                    tbl_filme_diretor fd ON f.id = fd.id_filme
+                JOIN 
+                    tbl_diretor d ON fd.id_diretor = d.id
+                GROUP BY 
+                    f.id;`
 
     let rsFilmes = await prisma.$queryRawUnsafe(sql)
-
 
     if (rsFilmes.length > 0)
         return rsFilmes
     else
         return false
-
-    // $queryRawUnsafe(sql)
-    //$queryRaw('select * from tbl_filme where nome = '+ variavel')
 }
+
 
 const selectByNomeFilmes = async function (nomeFilme) {
 
@@ -243,22 +265,45 @@ const selectByNomeFilmes = async function (nomeFilme) {
 
 //Função para buscar um filme do banco de dados pelo ID
 const selectByIdFilmes = async function (id) {
-
     try {
-        // script sql para buscar um filme pelo id
-        let sql = `select * from tbl_filme where id = ${id}`
+        // Script SQL para buscar um filme pelo ID
+        let sql = `SELECT 
+                        f.*, 
+                        c.faixa_etaria,
+                        GROUP_CONCAT(DISTINCT g.nome) AS generos,
+                        GROUP_CONCAT(DISTINCT a.nome) AS atores,
+                        GROUP_CONCAT(DISTINCT d.nome) AS diretores
+                    FROM 
+                        tbl_filme f
+                    JOIN 
+                        tbl_classificacao c ON f.id_classificacao = c.id
+                    JOIN 
+                        tbl_filme_genero fg ON f.id = fg.id_filme
+                    JOIN 
+                        tbl_genero g ON fg.id_genero = g.id
+                    JOIN 
+                        tbl_filme_ator fa ON f.id = fa.id_filme
+                    JOIN 
+                        tbl_ator a ON fa.id_ator = a.id
+                    JOIN 
+                        tbl_filme_diretor fd ON f.id = fd.id_filme
+                    JOIN 
+                        tbl_diretor d ON fd.id_diretor = d.id
+                    WHERE 
+                        f.id = ${id}
+                    GROUP BY 
+                        f.id;`
 
-        //Encaminha o script SQL para o BD
+        // Encaminha o script SQL para o BD
         let rsFilme = await prisma.$queryRawUnsafe(sql)
 
         return rsFilme
-
     } catch (error) {
-
+        console.error("Erro ao buscar filme por ID:", error)
         return false
-
     }
 }
+
 
 
 module.exports = {

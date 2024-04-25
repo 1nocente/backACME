@@ -388,9 +388,6 @@ app.get('/v2/AcmeFilmes/ator/:id/nacionalidade', cors(), async function (request
     response.status(resultado.status_code).json(resultado);
 });
 
-app.listen(port, () => {
-    console.log('RODANDO NA PORTA ' + port)
-})
 
 // -------------------------------------ATORES--------------------------------------------------------//
 
@@ -406,3 +403,43 @@ app.get('/v2/acmeFilmes/atores', cors(), async function (request, response) {
         response.status(404).json({ message: 'Nenhuma classificação encontrada' });
     }
 });
+
+app.get('/v2/acmefilmes/ator/:id', cors(), async function(request, response) {
+    let idP = request.params.id
+    let dados = await controllerAtores.getBuscarAtor(idP)
+
+    response.status(dados.status)
+    response.json(dados)
+})
+app.post('/v2/acmefilmes/ator', cors(), bodyParserJSON, async function(request, response) {
+    let contentType = request.headers['content-type']
+    let dadosBody = request.body
+    let newAtor = await controllerAtores.setInserirAtor(dadosBody, contentType)
+    response.status(newAtor.status_code)
+    response.json(newAtor)
+})
+app.put('/v2/acmefilmes/ator/:id', cors(), bodyParserJSON, async function(request, response) {
+    let contentType = request.headers['content-type']
+    let idAtor = request.params.id
+    let dadosPUT = request.body
+
+    let resultUpdateAtor = await controllerAtores.setAtualizarAtor(idAtor, dadosPUT, contentType)
+    response.status(resultUpdateAtor.status_code)
+    response.json(resultUpdateAtor)
+})
+
+app.delete('/v2/AcmeFilmes/ator/:id', cors(), bodyParserJSON, async function(request, response){
+
+    let idAtor = request.params.id
+
+    let atorDeletado = await controllerAtores.setDeletarAtor(idAtor)
+
+    response.json(atorDeletado)
+    response.status(atorDeletado.status_code)
+})
+
+
+
+app.listen(port, () => {
+    console.log('RODANDO NA PORTA ' + port)
+})

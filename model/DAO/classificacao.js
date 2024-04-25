@@ -77,6 +77,7 @@ const updateClassificacao = async function (id, dadosClassificacao) {
             WHERE id = ${id};
         `;
 
+        console.log(sql);
         let result = await prisma.$executeRawUnsafe(sql);
 
         if (result) {
