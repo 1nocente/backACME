@@ -205,40 +205,21 @@ const deleteFilme = async function (id) {
 }
 
 //Função para listar todos os filmes do Banco de Dados
-const selectAllFilmes = async function () {
-    let sql = `SELECT 
-                    f.*, 
-                    c.faixa_etaria,
-                    GROUP_CONCAT(DISTINCT g.nome) AS generos,
-                    GROUP_CONCAT(DISTINCT a.nome) AS atores,
-                    GROUP_CONCAT(DISTINCT d.nome) AS diretores
-                FROM 
-                    tbl_filme f
-                JOIN 
-                    tbl_classificacao c ON f.id_classificacao = c.id
-                JOIN 
-                    tbl_filme_genero fg ON f.id = fg.id_filme
-                JOIN 
-                    tbl_genero g ON fg.id_genero = g.id
-                JOIN 
-                    tbl_filme_ator fa ON f.id = fa.id_filme
-                JOIN 
-                    tbl_ator a ON fa.id_ator = a.id
-                JOIN 
-                    tbl_filme_diretor fd ON f.id = fd.id_filme
-                JOIN 
-                    tbl_diretor d ON fd.id_diretor = d.id
-                GROUP BY 
-                    f.id;`
-
-    let rsFilmes = await prisma.$queryRawUnsafe(sql)
-
-    if (rsFilmes.length > 0)
-        return rsFilmes
-    else
-        return false
-}
-
+const selectAllFilmes = async() => {
+    try {
+     let sql = 'select * from tbl_filme'
+     
+     let rsfilmes = await prisma.$queryRawUnsafe(sql)
+ 
+     return rsfilmes
+ 
+    } catch (error) {
+ 
+     return false
+    }
+    
+ }
+ 
 
 const selectByNomeFilmes = async function (nomeFilme) {
 
@@ -263,91 +244,45 @@ const selectByNomeFilmes = async function (nomeFilme) {
     }
 }
 
-//Função para buscar um filme do banco de dados pelo ID
-const selectByIdFilmes = async function (id) {
-    try {
-        // Script SQL para buscar um filme pelo ID
-        let sql = `SELECT 
-                        f.*, 
-                        c.faixa_etaria,
-                        GROUP_CONCAT(DISTINCT g.nome) AS generos,
-                        GROUP_CONCAT(DISTINCT a.nome) AS atores,
-                        GROUP_CONCAT(DISTINCT d.nome) AS diretores
-                    FROM 
-                        tbl_filme f
-                    JOIN 
-                        tbl_classificacao c ON f.id_classificacao = c.id
-                    JOIN 
-                        tbl_filme_genero fg ON f.id = fg.id_filme
-                    JOIN 
-                        tbl_genero g ON fg.id_genero = g.id
-                    JOIN 
-                        tbl_filme_ator fa ON f.id = fa.id_filme
-                    JOIN 
-                        tbl_ator a ON fa.id_ator = a.id
-                    JOIN 
-                        tbl_filme_diretor fd ON f.id = fd.id_filme
-                    JOIN 
-                        tbl_diretor d ON fd.id_diretor = d.id
-                    WHERE 
-                        f.id = ${id}
-                    GROUP BY 
-                        f.id;`
+const selectByIdFilme = async(id) => {
+    try{
 
-        // Encaminha o script SQL para o BD
-        let rsFilme = await prisma.$queryRawUnsafe(sql)
+    //Script sql para filtrar pelo id
+    let sql = `select * from tbl_filme where tbl_filme.id = ${id}`
 
-        return rsFilme
-    } catch (error) {
-        console.error("Erro ao buscar filme por ID:", error)
+    //Executa o sql no banco de dados
+    let rsfilmeId = await prisma.$queryRawUnsafe(sql)
+
+   return rsfilmeId
+
+    } catch(error){
         return false
     }
 }
+
+// Função para inserir atores associados a um filme
 const insertAtorFilme = async function (idFilme, idAtor) {
-    let sql;
-
     try {
-        sql = `INSERT INTO tbl_filme_ator (id_filme, id_ator) VALUES (${idFilme}, ${idAtor});`;
-        
-        console.log(sql); // Verifique se a consulta SQL está sendo gerada corretamente
-
-        let result = await prisma.$executeRawUnsafe(sql);
-
-        if (result) {
-            console.log(result); // Verifique o resultado retornado após a execução da consulta
-            return true;
-        } else {
-            return false;
-        }
+        const sql = `INSERT INTO tbl_filme_ator (id_filme, id_ator) VALUES (${idFilme}, ${idAtor});`;
+        const result = await prisma.$executeRawUnsafe(sql);
+        return result;
     } catch (error) {
-        console.error(error); // Registre qualquer erro que ocorra durante a execução da consulta
+        console.error("Erro ao inserir ator associado ao filme:", error);
         return false;
     }
 }
 
-
+// Função para inserir diretores associados a um filme
 const insertDiretorFilme = async function (idFilme, idDiretor) {
-    let sql;
-
     try {
-        sql = `INSERT INTO tbl_filme_diretor (id_filme, id_diretor) VALUES (${idFilme}, ${idDiretor});`;
-        
-        console.log(sql); // Verifique se a consulta SQL está sendo gerada corretamente
-
-        let result = await prisma.$executeRawUnsafe(sql);
-
-        if (result) {
-            console.log(result); // Verifique o resultado retornado após a execução da consulta
-            return true;
-        } else {
-            return false;
-        }
+        const sql = `INSERT INTO tbl_filme_diretor (id_filme, id_diretor) VALUES (${idFilme}, ${idDiretor});`;
+        const result = await prisma.$executeRawUnsafe(sql);
+        return result;
     } catch (error) {
-        console.error(error); // Registre qualquer erro que ocorra durante a execução da consulta
+        console.error("Erro ao inserir diretor associado ao filme:", error);
         return false;
     }
 }
-
 
 
 
@@ -359,7 +294,7 @@ module.exports = {
     updateFilme,
     deleteFilme,
     selectAllFilmes,
-    selectByIdFilmes,
+    selectByIdFilme,
     insertDiretorFilme,
     insertAtorFilme
 }
