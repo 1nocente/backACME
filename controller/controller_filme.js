@@ -215,27 +215,51 @@ const setExcluirFilme = async function (id) {
 
 //Função para listar todos os filmes
 const getListarFilmes = async() => {
-    let filmesJSON = {}
+    try {
+        // Obtém todos os filmes do banco de dados
+        let filmesJSON = {};
+        let dadosFilmes = await FilmesDAO.selectAllFilmes();
 
-    //Chama a função do DAO para retornar os dados da tabela de filmes
-    let dadosFilmes = await FilmesDAO.selectAllFilmes()
+        // Valida se existem dados de filmes
+        if (dadosFilmes) {
+            if (dadosFilmes.length > 0) {
+                // Cria um array para armazenar os detalhes de cada filme
+                filmesJSON.filmes = [];
 
-    //Validação para verificar se existem dados
-    if(dadosFilmes){
+                // Para cada filme, obtém os atores e diretores associados
+                for (const filme of dadosFilmes) {
+                    let atores = await FilmesDAO.selectAtoresFilme(filme.id);
+                    let diretores = await FilmesDAO.selectDiretoresFilme(filme.id);
 
-        if(dadosFilmes.length > 0 ){
-             //Cria o JSON para devolver para o app
-            filmesJSON.filmes = dadosFilmes
-            filmesJSON.quantidade = dadosFilmes.length
-            filmesJSON.status_code = 200
+                    // Adiciona os detalhes do filme, atores e diretores ao array de filmes
+                    filmesJSON.filmes.push({
+                        id: filme.id,
+                        nome: filme.nome,
+                        sinopse: filme.sinopse,
+                        duracao: filme.duracao,
+                        data_lancamento: filme.data_lancamento,
+                        foto_capa: filme.foto_capa,
+                        valor_unitario: filme.valor_unitario,
+                        classificacao: filme.classificacao,
+                        atores: atores,
+                        diretores: diretores
+                    });
+                }
 
-            return filmesJSON
-        }else{
-            return message.ERROR_NOT_FOUND
+                // Define a quantidade de filmes retornados e o status code
+                filmesJSON.quantidade = filmesJSON.filmes.length;
+                filmesJSON.status_code = 200;
+
+                return filmesJSON;
+            } else {
+                return message.ERROR_NOT_FOUND;
+            }
+        } else {
+            return message.ERROR_INTERNAL_SERVER_DB; //500
         }
-       
-    }else{
-        return message.ERROR_INTERNAL_SERVER_DB //500
+    } catch (error) {
+        console.error("Erro ao obter a lista de filmes:", error);
+        return message.ERROR_INTERNAL_SERVER; //500
     }
 }
 

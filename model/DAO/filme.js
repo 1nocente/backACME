@@ -289,6 +289,27 @@ const selectByIdFilme = async(id) => {
     }
 }
 
+const insertGeneroFilme = async function (idFilme, idGenero){
+
+    let sql
+
+    try {
+            sql = `insert into tbl_genero_filme ( genero_id, filme_id ) values 
+            ( ${idGenero}, ${idFilme})`
+        
+        let result = await prisma.$executeRawUnsafe(sql)
+
+        if (result)
+            return true
+        else
+            return false
+
+    } catch (error) {
+        console.log(error)
+        return false
+    }
+}
+
 // Função para inserir atores associados a um filme
 const insertAtorFilme = async function (idFilme, idAtor) {
     try {
@@ -327,6 +348,7 @@ module.exports = {
     insertDiretorFilme,
     insertAtorFilme,
     selectAtoresFilme,
-    selectDiretoresFilme
+    selectDiretoresFilme,
+    insertGeneroFilme
 }
 
