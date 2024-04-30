@@ -219,6 +219,35 @@ const selectAllFilmes = async() => {
     }
     
  }
+
+ // DAO para buscar informações dos atores de um filme
+const selectAtoresFilme = async (filmeId) => {
+    try {
+        let atoresQuery = `SELECT a.nome FROM tbl_ator a 
+                           JOIN tbl_filme_ator fa ON a.id = fa.id_ator 
+                           WHERE fa.id_filme = ${filmeId}`;
+        let atores = await prisma.$queryRawUnsafe(atoresQuery);
+        return atores.map(ator => ator.nome);
+    } catch (error) {
+        console.error("Erro ao buscar atores do filme:", error);
+        return false;
+    }
+}
+
+// DAO para buscar informações dos diretores de um filme
+const selectDiretoresFilme = async (filmeId) => {
+    try {
+        let diretoresQuery = `SELECT d.nome FROM tbl_diretor d 
+                              JOIN tbl_filme_diretor fd ON d.id = fd.id_diretor 
+                              WHERE fd.id_filme = ${filmeId}`;
+        let diretores = await prisma.$queryRawUnsafe(diretoresQuery);
+        return diretores.map(diretor => diretor.nome);
+    } catch (error) {
+        console.error("Erro ao buscar diretores do filme:", error);
+        return false;
+    }
+}
+
  
 
 const selectByNomeFilmes = async function (nomeFilme) {
@@ -296,6 +325,8 @@ module.exports = {
     selectAllFilmes,
     selectByIdFilme,
     insertDiretorFilme,
-    insertAtorFilme
+    insertAtorFilme,
+    selectAtoresFilme,
+    selectDiretoresFilme
 }
 
