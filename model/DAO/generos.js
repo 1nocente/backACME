@@ -116,11 +116,26 @@ const updateGenero = async function (id, dadosGenero) {
     }
 }
 
+
+const selectGenerosFilme = async (filmeId) => {
+    try {
+        let generosQuery = `SELECT a.nome FROM tbl_genero a 
+                           JOIN tbl_filme_genero fa ON a.id = fa.id_genero 
+                           WHERE fa.id_filme = ${filmeId}`;
+        let generos = await prisma.$queryRawUnsafe(generosQuery);
+        return generos.map(genero => genero.nome);
+    } catch (error) {
+        console.error("Erro ao buscar atores do filme:", error);
+        return false;
+    }
+}
+
 module.exports = {
     updateGenero,
     deleteGenero,
     selectAllGeneros,
     insertGenero,
-    getId
+    getId,
+    selectGenerosFilme
 }
 

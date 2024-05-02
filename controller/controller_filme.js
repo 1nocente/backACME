@@ -10,6 +10,7 @@ const message = require('../module/config.js')
 
 //import do arquivo responsavel pela interação com o BD (model)
 const FilmesDAO = require('../model/DAO/filme.js')
+const  GenerosDAO = require('../model/DAO/generos.js')
 
 //Função para inserir um novo filme
 const setInserirNovoFilme = async function (dadosFilme, contentType) {
@@ -230,6 +231,7 @@ const getListarFilmes = async() => {
                 for (const filme of dadosFilmes) {
                     let atores = await FilmesDAO.selectAtoresFilme(filme.id);
                     let diretores = await FilmesDAO.selectDiretoresFilme(filme.id);
+                    let generos = await GenerosDAO.selectGenerosFilme(filme.id)
 
                     // Adiciona os detalhes do filme, atores e diretores ao array de filmes
                     filmesJSON.filmes.push({
@@ -242,7 +244,8 @@ const getListarFilmes = async() => {
                         valor_unitario: filme.valor_unitario,
                         classificacao: filme.classificacao,
                         atores: atores,
-                        diretores: diretores
+                        diretores: diretores,
+                        generos: generos
                     });
                 }
 
