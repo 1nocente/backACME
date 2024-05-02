@@ -39,13 +39,15 @@ const insertClassificacao = async function (dadosClassificacao) {
                );`
 
     let result = await prisma.$executeRawUnsafe(sql)
-
+    
     if (result) {
         return true
     } else {
         return false
     }
 }
+
+
 
 // Função para excluir uma classificação no Banco de Dados
 const deleteClassificacao = async function (id) {

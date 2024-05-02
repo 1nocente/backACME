@@ -7,7 +7,12 @@ const nacionalidadeDAO = require('../model/DAO/nacionalidade.js')
 const sexoDAO = require('../model/DAO/sexo.js')
 
 const getListarAtores = async function () {
+
+    
+
     try {
+
+        let atoresJSON = {}
         // Chama a função do DAO que retorna atores do BD
         let dadosAtores = await atoresDAO.selectAllAtores()
 
@@ -23,6 +28,7 @@ const getListarAtores = async function () {
 
             // Retornar o ator com as nacionalidades
             return {
+                
                 ...ator,
                 nacionalidades: nacionalidades.map(nacionalidade => nacionalidade.nome)
             }
