@@ -294,7 +294,7 @@ const insertGeneroFilme = async function (idFilme, idGenero){
     let sql
 
     try {
-            sql = `insert into tbl_genero_filme ( genero_id, filme_id ) values 
+            sql = `insert into tbl_filme_genero ( id_genero, id_filme ) values 
             ( ${idGenero}, ${idFilme})`
         
         let result = await prisma.$executeRawUnsafe(sql)
@@ -310,7 +310,6 @@ const insertGeneroFilme = async function (idFilme, idGenero){
     }
 }
 
-// Função para inserir atores associados a um filme
 const insertAtorFilme = async function (idFilme, idAtor) {
     try {
         const sql = `INSERT INTO tbl_filme_ator (id_filme, id_ator) VALUES (${idFilme}, ${idAtor});`;
@@ -322,7 +321,6 @@ const insertAtorFilme = async function (idFilme, idAtor) {
     }
 }
 
-// Função para inserir diretores associados a um filme
 const insertDiretorFilme = async function (idFilme, idDiretor) {
     try {
         const sql = `INSERT INTO tbl_filme_diretor (id_filme, id_diretor) VALUES (${idFilme}, ${idDiretor});`;
@@ -333,6 +331,18 @@ const insertDiretorFilme = async function (idFilme, idDiretor) {
         return false;
     }
 }
+
+const selectFilterFilmes = async function (sql) {
+    try{
+        return rsFilmes = await prisma.$queryRawUnsafe(sql)
+    } catch (error) {
+        return false
+    }
+
+}
+
+
+
 
 
 

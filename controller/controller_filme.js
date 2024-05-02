@@ -65,31 +65,33 @@ const setInserirNovoFilme = async function (dadosFilme, contentType) {
                     // Códigos de validação existentes...
 
                     if (novoFilme && novoId) {
-                        const idPego = novoId;
+                        const idPego = novoId[0].id
+                        let elenco = dadosFilme.elenco
+                        let diretor = dadosFilme.diretor
+                        let genero = dadosFilme.genero
+
+                        for (let index = 0; index < elenco.length; index++) {
+                            const element = elenco[index];
+                                await FilmesDAO.insertAtorFilme(idPego, element);
+                                console.log(dadosFilme);
+
+                        }
+                        for (let index = 0; index < diretor.length; index++) {
+                            const element = diretor[index];
+                                await FilmesDAO.insertDiretorFilme(idPego, element);
+                          
+                        }
+                        for (let index = 0; index < genero.length; index++) {
+                            const element = genero[index];
+                                await FilmesDAO.insertGeneroFilme(idPego, element)
+                        }
+
                         // Cria o JSON de retorno dos dados (201)
                         novoFilmeJSON.filme = dadosFilme;
                         novoFilmeJSON.id = `novo id -> ${idPego}`;
                         novoFilmeJSON.status = message.SUCCESS_CREATED_ITEM.status;
                         novoFilmeJSON.status_code = message.SUCCESS_CREATED_ITEM.status_code;
                         novoFilmeJSON.message = message.SUCCESS_CREATED_ITEM.message;
-
-                        // Inserir atores associados ao filme
-                        for (const idAtor of dadosFilme.elenco) {
-                            if (!isNaN(idAtor)) {
-                                await FilmesDAO.insertAtorFilme(novoId, idAtor);
-                            } else {
-                                return message.ERROR_INVALID_NAME;
-                            }
-                        }
-
-                        // Inserir diretores associados ao filme
-                        for (const idDiretor of dadosFilme.diretor) {
-                            if (!isNaN(idDiretor)) {
-                                await FilmesDAO.insertDiretorFilme(novoId, idDiretor);
-                            } else {
-                                return message.ERROR_INVALID_NAME;
-                            }
-                        }
 
                         return novoFilmeJSON; // 201
                     } else {
@@ -302,6 +304,58 @@ const getBuscarFilme = async(id) => {
     }
 }
 
+const getFiltrarFilmes = async function (filter, contentType) {
+
+    try{
+        if(String(contentType).toLowerCase()== 'application/json'){
+            let filmesJSON = {};
+
+            let listaGeneros = []
+            filter.generos.forEach(genero => {
+                if(genero.checked){
+                    listaGeneros.push(genero.id)
+                }
+            });
+            const generosSelecionados = listaGeneros.join(',')
+            let search = filter.search
+            let sql = `SELECT Filmes.id,Filmes.nome,sinopse,duracao,data_lancamento,data_relancamento,foto_capa,foto_fundo,cor,id_classificacao_indicativa AS classificacao, (SELECT GROUP_CONCAT(Generos.nome SEPARATOR ', ') FROM filme_genero INNER JOIN Generos ON filme_genero.id_genero = Generos.id WHERE filme_genero.id_filme = Filmes.id) AS Genero FROM Filmes LEFT JOIN filme_genero ON Filmes.id = filme_genero.id_filme LEFT JOIN Generos ON filme_genero.id_genero = Generos.id 
+            WHERE (Filmes.nome LIKE '%${search}%' OR Filmes.sinopse LIKE '%${search}%') AND (Filmes.id_classificacao_indicativa<=${filter.maxAge}) AND (Filmes.data_lancamento>='0001-01-01' AND Filmes.data_lancamento<='9999-12-31') AND (Generos.id IN (0)) GROUP BY Filmes.id`
+            
+            if(listaGeneros.length>0){
+                sql = sql.replace('(0)',`(${generosSelecionados})`)
+            }
+            if(filter.dataMinima){
+                sql =sql.replace('0001-01-01',`${filter.dataMinima}`)
+            }
+            if(filter.dataMaxima){
+                sql =sql.replace('9999-12-31',`${filter.dataMaxima}`)
+            }
+
+            console.log(sql)
+            let dadosFilmes = await DAO.selectFilterFilmes(sql);
+                if (dadosFilmes) {
+                if(dadosFilmes.length > 0) {
+                    filmesJSON.filmes = dadosFilmes;
+                    filmesJSON.quantidade = dadosFilmes.length;
+                    filmesJSON.status_code = 200;
+                    return filmesJSON;
+                } else {
+                    return message.ERROR_NOT_FOUND //404
+                }
+            } else {
+                return message.ERROR_INTERNAL_SERVER_DB //500
+            }
+        } else {
+            return message.ERROR_CONTENT_TYPE // 415
+        }
+
+    } catch (error){
+        console.log(error)
+    return message.ERROR_INTERNAL_SERVER //500 - Erro na controller
+}
+}
+
+
 
 const getNomeFilme = async function (nomeFilme) {
 
@@ -334,6 +388,8 @@ const getNomeFilme = async function (nomeFilme) {
     }
 
 
+    
+
 
 
 
@@ -362,4 +418,5 @@ module.exports = {
     setInserirNovoFilme,
     getBuscarFilme,
     getListarFilmes,
+    get
 }

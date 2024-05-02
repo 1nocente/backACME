@@ -492,6 +492,15 @@ app.delete('/v2/AcmeFilmes/diretor/:id', cors(), bodyParserJSON, async function(
     response.status(diretorDeletado.status_code)
 })
 
+app.post('/v2/acmefilmes/filmes/filter', cors(), bodyParserJSON, async function(request, response,){
+    let contentType = request.headers['content-type'];
+    let dadosBody = request.body;
+
+    let dadosFilmes = await controllerFilmes.getFiltrarFilmes(dadosBody, contentType);
+    response.status(dadosFilmes.status_code)
+    response.json(dadosFilmes)
+})
+
 
 
 app.listen(port, () => {
