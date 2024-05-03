@@ -417,6 +417,5 @@ module.exports = {
     setExcluirFilme,
     setInserirNovoFilme,
     getBuscarFilme,
-    getListarFilmes,
-    get
+    getListarFilmes
 }
