@@ -332,15 +332,6 @@ const insertDiretorFilme = async function (idFilme, idDiretor) {
     }
 }
 
-const selectFilterFilmes = async function (sql) {
-    try{
-        return rsFilmes = await prisma.$queryRawUnsafe(sql)
-    } catch (error) {
-        return false
-    }
-
-}
-
 
 
 

@@ -244,7 +244,7 @@ const getListarFilmes = async() => {
                         data_lancamento: filme.data_lancamento,
                         foto_capa: filme.foto_capa,
                         valor_unitario: filme.valor_unitario,
-                        classificacao: filme.classificacao,
+                        id_classificacao: filme.id_classificacao,
                         atores: atores,
                         diretores: diretores,
                         generos: generos
